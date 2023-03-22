@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\InertiaTest;
+use App\Http\Requests\InertiaFormRequest;
 
 class InertiaTestController extends Controller
 {
@@ -27,12 +28,10 @@ class InertiaTestController extends Controller
         );
     }
 
-    public function store(Request $request){
+    public function store(InertiaFormRequest $request,InertiaTest $inertiaTest){
 
-        $inertiaTest = new InertiaTest;
 
-        $inertiaTest->title = $request->title;
-        $inertiaTest->content = $request->content;
+        $inertiaTest->fill($request->all());
         $inertiaTest->save();
 
         return to_route('inertia.index');
