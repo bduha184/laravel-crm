@@ -12,7 +12,9 @@ class InertiaTestController extends Controller
     //
     public function index()
     {
-        return Inertia::render('Inertia/Index');
+        return Inertia::render('Inertia/Index',[
+            'blogs' => InertiaTest::all()
+        ]);
     }
     public function create()
     {
@@ -39,4 +41,6 @@ class InertiaTestController extends Controller
             'message'=>'登録しました',
         ]);
     }
+
+
 }
