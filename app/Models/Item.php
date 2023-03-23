@@ -5,12 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class InertiaTest extends Model
+class Item extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'title',
-        'content'
+        'name',
+        'memo',
+        'price',
+        'is_selling'
     ];
 }
