@@ -11,7 +11,7 @@ class StoreItemRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,15 @@ class StoreItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'max:50'],
+            'price' => ['required', 'numeric'],
         ];
     }
+
+    // public function attributes():array{
+    //     return [
+    //         'name'=>'商品名',
+    //         'price'=>'商品価格',
+    //     ];
+    // }
 }
