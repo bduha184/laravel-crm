@@ -153,6 +153,9 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'name'=>'商品名',
+        'price'=>'商品価格',
+    ],
 
 ];
