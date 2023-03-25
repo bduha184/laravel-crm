@@ -3,6 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head,router } from "@inertiajs/vue3";
 import {reactive} from 'vue';
 import BreezeValidationErrors from "@/Components/ValidationErrors.vue";
+import { Core as YubinBangoCore } from "yubinbango-core2";
 
 defineProps({
     errors:Object
@@ -18,9 +19,12 @@ const form = reactive({
     gender: null,
     memo: null
 })
-const storeItem = () => {
+const storeCustomer = () => {
     router.post('/customers',form)
 }
+const fetchAddress = () => {
+new YubinBangoCore(String(form.postcode), (value) => { form.address = value.region + value.locality + value.street
+}) }
 
 </script>
 
@@ -42,7 +46,7 @@ const storeItem = () => {
                     <div class="p-6 text-gray-900">
                         <BreezeValidationErrors :errors="errors"></BreezeValidationErrors>
                         <section class="text-gray-600 body-font relative">
-                            <form @submit.prevent="storeItem">
+                            <form @submit.prevent="storeCustomer">
                                 <div class="container px-5 py-8 mx-auto">
                                     <div class="lg:w-1/2 md:w-2/3 mx-auto">
                                         <div class="-m-2">
@@ -121,6 +125,7 @@ const storeItem = () => {
                                                         type="number"
                                                         id="postcode"
                                                         name="postcode"
+                                                        @change="fetchAddress"
                                                         v-model="form.postcode"
                                                         class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                                                     />
