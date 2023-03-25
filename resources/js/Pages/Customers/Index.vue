@@ -2,10 +2,12 @@
 import FlashMessage from "@/Components/FlashMessage.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head,Link} from "@inertiajs/vue3";
+import Pagination from "@/Components/Pagination.vue";
 
-defineProps({
-    customers:Array
+const props = defineProps({
+    customers:Object
 })
+
 </script>
 
 <template>
@@ -64,20 +66,17 @@ defineProps({
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="customer in customers" :key="customer.id">
+                                            <tr v-for="customer in customers.data" :key="customer.data">
                                                 <td class="border-b-2 border-gray-200 px-4 py-3">
                                                         {{customer.id }}
                                                 </td>
                                                 <td class="border-b-2 border-gray-200 px-4 py-3">{{ customer.name }}</td>
                                                 <td class="border-b-2 border-gray-200 px-4 py-3">{{ customer.kana }}</td>
                                                 <td class="border-b-2 border-gray-200 px-4 py-3">{{ customer.tel }}</td>
-                                                <!-- <td class="border-b-2 border-gray-200 px-4 py-3">
-                                                    <span v-if="customer.is_selling === 1">販売中</span>
-                                                    <span v-if="customer.is_selling === 0">停止中</span>
-                                                </td> -->
                                             </tr>
                                         </tbody>
                                     </table>
+                                    <Pagination :links="customers.links" class=""></Pagination>
                                 </div>
                             </div>
                         </section>
