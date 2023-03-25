@@ -27,6 +27,7 @@ class ItemController extends Controller
     public function create()
     {
         //
+
         return Inertia::render('Items/Create');
     }
 
@@ -35,7 +36,6 @@ class ItemController extends Controller
      */
     public function store(StoreItemRequest $request)
     {
-        //
         Item::create([
             'name'=>$request->name,
             'memo'=>$request->memo,
@@ -47,7 +47,6 @@ class ItemController extends Controller
             'message'=>'登録しました',
             'status'=>'success'
         ]);;
-
     }
 
     /**
@@ -56,6 +55,13 @@ class ItemController extends Controller
     public function show(Item $item)
     {
         //
+        return Inertia::render(
+            'Items/Show',
+            [
+                'item'=>$item
+            ],
+        );
+
     }
 
     /**
@@ -64,15 +70,30 @@ class ItemController extends Controller
     public function edit(Item $item)
     {
         //
+        return Inertia::render(
+            'Items/Edit',
+            [
+                'item'=>$item
+            ],
+        );
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateItemRequest $request, Item $item)
+    public function update(UpdateItemRequest $request,Item $item)
     {
-        //
+
+        $item->fill($request->all())->save();
+
+        return to_route('items.index')
+        ->with([
+            'message'=>'更新しました',
+            'status'=>'success'
+        ]);
+
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -80,5 +101,12 @@ class ItemController extends Controller
     public function destroy(Item $item)
     {
         //
+        $item->delete();
+
+        return to_route('items.index')
+        ->with([
+            'message'=>'削除しました',
+            'status' => 'danger'
+        ]);
     }
 }
