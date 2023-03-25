@@ -33,14 +33,21 @@ class CustomerController extends Controller
     public function create()
     {
         //
+        return Inertia::render('Customers/Create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCustomerRequest $request)
+    public function store(StoreCustomerRequest $request,Customer $customer)
     {
-        //
+        $customer->fill($request->all())->save();
+
+        return to_route('customers.index')
+        ->with([
+            'message'=>'登録しました',
+            'status'=>'success'
+        ]);
     }
 
     /**
