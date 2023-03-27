@@ -1,7 +1,31 @@
 <script setup>
-import {ref} from "vue";
-const isShow = ref(false)
-const toggleStatus = () => { isShow.value = !isShow.value}
+import { ref, onMounted, reactive } from "vue";
+import axios from "axios";
+
+const isShow = ref(false);
+const toggleStatus = () => {
+    isShow.value = !isShow.value;
+};
+const search = ref("");
+const customers = reactive([]);
+const searchCustomers = async () => {
+    try {
+        await axios.get(`/api/searchCustomers/?search=${search.value}`)
+        .then((res) => {
+            console.log(res.data);
+            customers.value = res.data;
+        })
+        isShow.value = !isShow.value
+    } catch (e) {
+        console.log(e.message);
+    }
+};
+
+onMounted(() => {
+    axios.get("/api/user").then((res) => {
+        console.log(res.data);
+    });
+});
 </script>
 
 <template>
@@ -16,7 +40,7 @@ const toggleStatus = () => { isShow.value = !isShow.value}
                 <header class="modal__header">
                     <h2 class="modal__title" id="modal-1-title">Micromodal</h2>
                     <button
-                    type="button"
+                        type="button"
                         class="modal__close"
                         aria-label="Close modal"
                         data-micromodal-close
@@ -31,12 +55,15 @@ const toggleStatus = () => { isShow.value = !isShow.value}
                     </p>
                 </main>
                 <footer class="modal__footer">
-                    <button @click="toggleStatus" type="button" class="modal__btn modal__btn-primary">
-
+                    <button
+                        @click="toggleStatus"
+                        type="button"
+                        class="modal__btn modal__btn-primary"
+                    >
                         Continue
                     </button>
                     <button
-                    type="button"
+                        type="button"
                         class="modal__btn"
                         data-micromodal-close
                         aria-label="Close this dialog window"
@@ -48,5 +75,13 @@ const toggleStatus = () => { isShow.value = !isShow.value}
             </div>
         </div>
     </div>
-    <button type="button" @click="toggleStatus"  data-micromodal-trigger="modal-1" href='javascript:;'>Open Modal Dialog</button>
+    <input name="customer" v-model="search">
+    <button
+        type="button"
+        @click="searchCustomers"
+        data-micromodal-trigger="modal-1"
+        href="javascript:;"
+    >
+    検索する
+    </button>
 </template>
