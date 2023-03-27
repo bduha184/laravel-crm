@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, router } from "@inertiajs/vue3";
-import { reactive, onMounted, ref,compile } from "vue";
+import { reactive, onMounted, ref } from "vue";
 import BreezeValidationErrors from "@/Components/ValidationErrors.vue";
 import { getToday } from "@/common";
 import { computed } from "@vue/reactivity";
@@ -10,10 +10,6 @@ const props = defineProps({
     customers: Array,
     items: Array,
 });
-
-const itemList = ref([]);
-
-
 
 onMounted(() => {
     form.date = getToday();
@@ -27,75 +23,46 @@ onMounted(() => {
     });
 });
 
+const itemList = ref([]);
+
+const totalPrice = computed(() => {
+    let total = 0;
+    itemList.value.forEach((item) => {
+        total += item.price * item.quantity;
+    });
+    return total;
+});
+
 const quantity = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 const form = reactive({
     date: null,
     customer_id: null,
+    status: true,
+    items: [],
 });
 
-
-const totalPrice = computed(()=>{
-    let total=0;
-    itemList.value.forEach(item=>{
-        total += item.price*item.quantity;
+const storePurchase = () => {
+    itemList.value.forEach((item) => {
+        if (item.quantity > 0) {
+            form.items.push({
+                id: item.id,
+                quantity: item.quantity,
+            });
+        }
     });
-    return total;
-})
 
+    router.post(route("purchases.store"), form);
+};
 </script>
 
 <template>
-    日付:<br />
-    <input type="date" name="date" v-model="form.date" /><br />
-    会員名：<br />
-    <select name="customer" v-model="form.customer_id">
-        <option
-            v-for="customer in customers"
-            :key="customer.id"
-            :value="customer.id"
-        >
-            {{ customer.id }}:{{ customer.name }}
-        </option>
-    </select>
-    購入情報：<br />
-
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>>商品名</th>
-                <th>金額</th>
-                <th>数量</th>
-                <th>小計</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="item in itemList">
-                <td>{{ item.id }}</td>
-                <td>{{ item.name }}</td>
-                <td>{{ item.price }}</td>
-                <td>
-                    <select name="quantity" v-model="item.quantity">
-                        <option v-for="q in quantity" :value="q">
-                            {{ q }}
-                        </option>
-                    </select>
-                </td>
-                <td>
-                    {{ item.price * item.quantity }}
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    合計金額： {{ totalPrice }}円
-    <!-- <Head title="購入画面" />
+    <Head title="購入情報登録" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                購入画面
+                購入情報登録
             </h2>
         </template>
 
@@ -103,26 +70,25 @@ const totalPrice = computed(()=>{
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
-                        <BreezeValidationErrors
+                        <!-- <BreezeValidationErrors
                             :errors="errors"
-                        ></BreezeValidationErrors>
+                        ></BreezeValidationErrors> -->
                         <section class="text-gray-600 body-font relative">
-                            <form @submit.prevent="storeItem">
+                            <form @submit.prevent="storePurchase">
                                 <div class="container px-5 py-8 mx-auto">
                                     <div class="lg:w-1/2 md:w-2/3 mx-auto">
                                         <div class="-m-2">
                                             <div class="p-2 w-full">
                                                 <div class="relative">
                                                     <label
-                                                        for="name"
+                                                        for="date"
                                                         class="leading-7 text-sm text-gray-600"
-                                                        >商品名</label
+                                                        >日付</label
                                                     >
                                                     <input
-                                                        type="text"
-                                                        id="name"
-                                                        name="name"
-                                                        v-model="form.name"
+                                                        type="date"
+                                                        name="date"
+                                                        v-model="form.date"
                                                         class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                                                     />
                                                 </div>
@@ -130,16 +96,27 @@ const totalPrice = computed(()=>{
                                             <div class="p-2 w-full">
                                                 <div class="relative">
                                                     <label
-                                                        for="memo"
+                                                        for="customer"
                                                         class="leading-7 text-sm text-gray-600"
-                                                        >メモ</label
+                                                        >会員名</label
                                                     >
-                                                    <textarea
-                                                        id="memo"
-                                                        name="memo"
-                                                        v-model="form.memo"
-                                                        class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
-                                                    ></textarea>
+                                                    <select
+                                                        name="customer"
+                                                        v-model="
+                                                            form.customer_id
+                                                        "
+                                                        class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
+                                                    >
+                                                        <option
+                                                            v-for="customer in customers"
+                                                            :key="customer.id"
+                                                            :value="customer.id"
+                                                        >
+                                                            {{ customer.id }}:{{
+                                                                customer.name
+                                                            }}
+                                                        </option>
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="p-2 w-full">
@@ -147,22 +124,74 @@ const totalPrice = computed(()=>{
                                                     <label
                                                         for="price"
                                                         class="leading-7 text-sm text-gray-600"
-                                                        >商品価格</label
+                                                        >購入情報</label
                                                     >
-                                                    <input
-                                                        type="number"
-                                                        id="price"
-                                                        name="price"
-                                                        v-model="form.price"
-                                                        class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-                                                    />
+                                                    <table class="table-auto w-full text-left whitespace-no-wrap">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">ID</th>
+                                                                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">商品名</th>
+                                                                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">金額</th>
+                                                                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">数量</th>
+                                                                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">小計</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr
+                                                                v-for="item in itemList"
+                                                            >
+                                                                <td class="border-b-2 border-gray-200 px-4 py-3">
+                                                                    {{
+                                                                        item.id
+                                                                    }}
+                                                                </td>
+                                                                <td class="border-b-2 border-gray-200 px-4 py-3">
+                                                                    {{
+                                                                        item.name
+                                                                    }}
+                                                                </td>
+                                                                <td class="border-b-2 border-gray-200 px-4 py-3">
+                                                                    {{
+                                                                        item.price
+                                                                    }}
+                                                                </td>
+                                                                <td class="border-b-2 border-gray-200 px-4 py-3">
+                                                                    <select
+                                                                        name="quantity"
+                                                                        v-model="
+                                                                            item.quantity
+                                                                        "
+                                                                    >
+                                                                        <option
+                                                                            v-for="q in quantity"
+                                                                            :value="
+                                                                                q
+                                                                            "
+                                                                        >
+                                                                            {{
+                                                                                q
+                                                                            }}
+                                                                        </option>
+                                                                    </select>
+                                                                </td>
+                                                                <td class="border-b-2 border-gray-200 px-4 py-3">
+                                                                    {{
+                                                                        item.price *
+                                                                        item.quantity
+                                                                    }}
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    合計金額：
+                                                    {{ totalPrice }}円<br />
                                                 </div>
                                             </div>
                                             <div class="p-2 w-full">
                                                 <button
                                                     class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
                                                 >
-                                                    商品登録
+                                                    登録する
                                                 </button>
                                             </div>
                                         </div>
@@ -174,5 +203,5 @@ const totalPrice = computed(()=>{
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout> -->
+    </AuthenticatedLayout>
 </template>
