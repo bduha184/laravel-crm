@@ -8,6 +8,8 @@ use App\Models\Customer;
 use App\Models\Item;
 use App\Models\Purchase;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
+
 
 class PurchaseController extends Controller
 {
@@ -36,9 +38,28 @@ class PurchaseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePurchaseRequest $request)
+    public function store(StorePurchaseRequest $request,Purchase $purchase,Item $item)
     {
-        //
+        DB::beginTransaction();
+
+        try{
+
+            $purchase->fill($request->all())->save();
+
+            foreach($request->items as $item){
+                $purchase->items()->attach($purchase->id,[
+                    'item_id'=>$item['id'],
+                    'quantity'=>$item['quantity'],
+                ]);
+            }
+            DB::commit();
+            return to_route('dashboard');
+
+        }catch(\Exception $e){
+
+            DB::rollBack();
+
+        }
     }
 
     /**
