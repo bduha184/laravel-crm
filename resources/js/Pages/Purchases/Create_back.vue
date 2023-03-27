@@ -6,6 +6,7 @@ import BreezeValidationErrors from "@/Components/ValidationErrors.vue";
 import { getToday } from "@/common";
 import { computed } from "@vue/reactivity";
 
+
 const props = defineProps({
     customers: Array,
     items: Array,

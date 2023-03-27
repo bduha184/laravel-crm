@@ -5,6 +5,7 @@ import { reactive, onMounted, ref } from "vue";
 import BreezeValidationErrors from "@/Components/ValidationErrors.vue";
 import { getToday } from "@/common";
 import { computed } from "@vue/reactivity";
+import MicroModal from '@/Components/MicroModal.vue';
 
 const props = defineProps({
     customers: Array,
@@ -95,6 +96,7 @@ const storePurchase = () => {
                                             </div>
                                             <div class="p-2 w-full">
                                                 <div class="relative">
+                                                    <MicroModal />
                                                     <label
                                                         for="customer"
                                                         class="leading-7 text-sm text-gray-600"
