@@ -55,6 +55,11 @@ const storePurchase = () => {
 
     router.post(route("purchases.store"), form);
 };
+
+const setCustomerId = id => {
+    form.customer_id = id;
+}
+
 </script>
 
 <template>
@@ -74,7 +79,7 @@ const storePurchase = () => {
                         <!-- <BreezeValidationErrors
                             :errors="errors"
                         ></BreezeValidationErrors> -->
-                        <section class="text-gray-600 body-font relative">
+                        <section class="text-gray-600 body-font">
                             <form @submit.prevent="storePurchase">
                                 <div class="container px-5 py-8 mx-auto">
                                     <div class="lg:w-1/2 md:w-2/3 mx-auto">
@@ -96,29 +101,12 @@ const storePurchase = () => {
                                             </div>
                                             <div class="p-2 w-full">
                                                 <div class="relative">
-                                                    <MicroModal />
                                                     <label
-                                                        for="customer"
-                                                        class="leading-7 text-sm text-gray-600"
-                                                        >会員名</label
+                                                    for="customer"
+                                                    class="leading-7 text-sm text-gray-600"
+                                                    >会員名</label
                                                     >
-                                                    <select
-                                                        name="customer"
-                                                        v-model="
-                                                            form.customer_id
-                                                        "
-                                                        class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"
-                                                    >
-                                                        <option
-                                                            v-for="customer in customers"
-                                                            :key="customer.id"
-                                                            :value="customer.id"
-                                                        >
-                                                            {{ customer.id }}:{{
-                                                                customer.name
-                                                            }}
-                                                        </option>
-                                                    </select>
+                                                    <MicroModal @update:customerId="setCustomerId"/>
                                                 </div>
                                             </div>
                                             <div class="p-2 w-full">
