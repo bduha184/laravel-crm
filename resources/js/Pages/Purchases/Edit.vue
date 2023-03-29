@@ -10,6 +10,7 @@ const props = defineProps({
     items: Array,
     order: Array,
 });
+const itemList = ref([]);
 
 onMounted(() => {
     props.items.forEach((item) => {
@@ -22,9 +23,9 @@ onMounted(() => {
     });
 });
 
-const itemList = ref([]);
 
 const form = reactive({
+    id:props.order[0].id,
     date: dayjs(props.order[0].created_at).format('YYYY-MM-DD'),
     customer_id: props.order[0].customer_id,
     status: props.order[0].status,
@@ -41,7 +42,7 @@ const totalPrice = computed(() => {
     return total;
 });
 
-const storePurchase = () => {
+const updatePurchase = id => {
     itemList.value.forEach((item) => {
         if (item.quantity > 0) {
             form.items.push({
@@ -50,13 +51,8 @@ const storePurchase = () => {
             });
         }
     });
-
-    router.post(route("purchases.store"), form);
+    router.put(route('purchases.update',{purchase:id}),form);
 };
-
-const setCustomerId = id => {
-    form.customer_id = id;
-}
 
 </script>
 
@@ -78,7 +74,7 @@ const setCustomerId = id => {
                             :errors="errors"
                         ></BreezeValidationErrors> -->
                         <section class="text-gray-600 body-font">
-                            <form @submit.prevent="storePurchase">
+                            <form @submit.prevent="updatePurchase(form.id)">
                                 <div class="container px-5 py-8 mx-auto">
                                     <div class="lg:w-1/2 md:w-2/3 mx-auto">
                                         <div class="-m-2">
@@ -205,7 +201,7 @@ const setCustomerId = id => {
                                                 <button
                                                     class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
                                                 >
-                                                    登録する
+                                                    更新する
                                                 </button>
                                             </div>
                                         </div>

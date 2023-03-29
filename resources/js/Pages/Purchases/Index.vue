@@ -6,12 +6,8 @@ import Pagination from "@/Components/Pagination.vue";
 import { onMounted } from "vue";
 import dayjs from 'dayjs';
 
-const props = defineProps({
+ defineProps({
     orders:Object
-})
-
-onMounted(()=>{
-   orders =  props.orders.data;
 })
 
 
@@ -121,7 +117,7 @@ onMounted(()=>{
                                         </tbody>
                                     </table>
                                     <Pagination
-                                        :links="props.orders.links"
+                                        :links="orders.links"
                                         class=""
                                     ></Pagination>
                                 </div>
