@@ -22,11 +22,11 @@ class PurchaseController extends Controller
         // dd(Order::paginate(50));
 
         $orders = Order::groupBy('id')
-        ->selectRaw('id,customer_name,sum(subtotal) as total,status,created_at')
-        ->paginate(50);
+            ->selectRaw('id,customer_name,sum(subtotal) as total,status,created_at')
+            ->paginate(50);
 
-        return Inertia::render('Purchases/Index',[
-            'orders'=> $orders,
+        return Inertia::render('Purchases/Index', [
+            'orders' => $orders,
         ]);
     }
 
@@ -37,37 +37,35 @@ class PurchaseController extends Controller
     {
 
         // $customers = Customer::select('id','name','kana','birthday')->get();
-        $items = Item::select('id','name','price')->get();
-        return Inertia::render('Purchases/Create',[
+        $items = Item::select('id', 'name', 'price')->get();
+        return Inertia::render('Purchases/Create', [
             // 'customers'=>$customers,
-            'items'=>$items,
+            'items' => $items,
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePurchaseRequest $request,Purchase $purchase,Item $item)
+    public function store(StorePurchaseRequest $request, Purchase $purchase, Item $item)
     {
         DB::beginTransaction();
 
-        try{
+        try {
 
             $purchase->fill($request->all())->save();
 
-            foreach($request->items as $item){
-                $purchase->items()->attach($purchase->id,[
-                    'item_id'=>$item['id'],
-                    'quantity'=>$item['quantity'],
+            foreach ($request->items as $item) {
+                $purchase->items()->attach($purchase->id, [
+                    'item_id' => $item['id'],
+                    'quantity' => $item['quantity'],
                 ]);
             }
             DB::commit();
             return to_route('dashboard');
-
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
 
             DB::rollBack();
-
         }
     }
 
@@ -78,15 +76,15 @@ class PurchaseController extends Controller
     {
         //
 
-        $items = Order::where('id',$purchase->id)->get();
+        $items = Order::where('id', $purchase->id)->get();
         $order = Order::groupBy('id')
-        ->where('id',$purchase->id)
-        ->selectRaw('id,sum(subtotal) as total,customer_name,status,created_at')
-        ->get();
+            ->where('id', $purchase->id)
+            ->selectRaw('id,sum(subtotal) as total,customer_name,status,created_at')
+            ->get();
 
-        return Inertia::render('Purchases/Show',[
-            'items'=>$items,
-            'order'=>$order
+        return Inertia::render('Purchases/Show', [
+            'items' => $items,
+            'order' => $order
         ]);
     }
 
@@ -97,7 +95,37 @@ class PurchaseController extends Controller
     public function edit(Purchase $purchase)
     {
         //
+        $purchases = Purchase::find($purchase->id);
+        $allItems = Item::select('id', 'name', 'price')->get();
+
+        $items = [];
+
+        foreach ($allItems as $allItem) {
+            $quantity = 0;
+
+            foreach ($purchases->items as $item) {
+                if ($allItem->id === $item->id) {
+                    $quantity = $item->pivot->quantity;
+                }
+            }
+
+            array_push($items,[
+                'id'=>$allItem->id,
+                'name'=>$allItem->name,
+                'price'=>$allItem->price,
+                'quantity'=>$quantity,
+            ]);
+        }
+        $order = Order::groupBy('id')
+        ->where('id', $purchase->id)
+        ->selectRaw('id,customer_id,customer_name,status,created_at')
+        ->get();
+        return Inertia::render('Purchases/Edit',[
+            'items'=>$items,
+            'order'=>$order
+        ]);
     }
+
 
     /**
      * Update the specified resource in storage.
