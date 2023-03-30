@@ -26,6 +26,14 @@ class AnalysisController extends Controller
                 ->groupBy('date')
                 ->selectRaw('date, sum(totalPerPurchase) as total')->get();
         }
-        return response()->json(['data' => $data, 'type' => $request->type], Response::HTTP_OK);
+
+        $labels = $data->pluck('date');
+        $totals = $data->pluck('total');
+        return response()->json([
+            'data'=>$data,
+            'type'=>$request->type,
+            'labels' => $labels,
+            'totals' => $totals
+        ], Response::HTTP_OK);
     }
 }
