@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateAnalysisRequest;
 use App\Models\Analysis;
 use App\Models\Order;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class AnalysisController extends Controller
 {
@@ -16,18 +17,21 @@ class AnalysisController extends Controller
     public function index()
     {
         //
-        $startDate="2022-08-01";
-        $endDate="2022-08-31";
+        $startDate = "2022-08-01";
+        $endDate = "2022-08-31";
 
-        $period = Order::betweenDate($startDate,$endDate)
+        $subQuery = Order::betweenDate($startDate, $endDate)
+        ->where('status', true)
         ->groupBy('id')
-        ->selectRaw('id,sum(subtotal) as total,customer_name,status,created_at')
-        ->orderBy('created_at')
-        ->paginate(50);
+        ->selectRaw('id, SUM(subtotal) as totalPerPurchase, DATE_FORMAT(created_at, "%Y%m%d") as date');
 
-        return Inertia::render('Analysis',[
-            'period' => $period,
-        ]);
+        $data = DB::table($subQuery)
+        ->groupBy('date')
+        ->selectRaw('date, sum(totalPerPurchase) as total')
+        ->get();
+
+
+        return Inertia::render('Analysis');
     }
 
 }
