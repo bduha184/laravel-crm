@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalysisController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -11,11 +12,14 @@ use App\Http\Controllers\PurchaseController;
 
 Route::resource('/items', ItemController::class)
 ->middleware(['auth', 'verified']);
+
 Route::resource('/customers', CustomerController::class)
 ->middleware(['auth', 'verified']);
 
 Route::resource('/purchases',PurchaseController::class)
 ->middleware(['auth','verified']);
+
+Route::get('/analysis',[AnalysisController::class,'index'])->name('analysis');
 
 
 Route::get('/inertia-test', function () {
