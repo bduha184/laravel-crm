@@ -61,18 +61,9 @@ const getData = async () => {
                             <input type="radio" v-model="form.type" value="perYear">
                             <span class="mr-4">年別</span>
                             <br>
-                            From:
-                            <input
-                                type="date"
-                                name="startDate"
-                                v-model="form.startDate"
-                            />
-                            to:
-                            <input
-                                type="date"
-                                name="endDate"
-                                v-model="form.endDate"
-                            /><br />
+                            From:<input type="date" name="startDate" v-model="form.startDate"/>
+                            to:<input type="date" name="endDate" v-model="form.endDate"/>
+                            <br />
                             <button
                                 class="flex mx-auto my-4 text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
                             >
