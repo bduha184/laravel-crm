@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
 
-class AnalysisServices
+class AnalysisService
 {
 
     public static function perDay($subQuery)
